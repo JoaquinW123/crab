@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template
 from tensorflow import keras
 import numpy as np
 import joblib
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -28,9 +29,11 @@ def predict():
         float(data['Sex_M'])
     ]
 
-    # Scale input and predict
-    input_array = np.array([features])  # shape: (1, 7)
-    input_scaled = scaler.transform(input_array)
+    # Feature names used during training
+    feature_names = ['Length', 'Diameter', 'Height', 'Weight', 'Sex_F', 'Sex_I', 'Sex_M']
+    input_df = pd.DataFrame([features], columns=feature_names)
+    input_scaled = scaler.transform(input_df)
+
     prediction = model.predict(input_scaled)[0][0]
 
     return jsonify({'prediction': float(prediction)})
