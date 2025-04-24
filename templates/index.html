@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Age Predictor</title>
+</head>
+<body>
+  <h1>Predict Age</h1>
+  <form id="predict-form">
+    <input name="Length" placeholder="Length" required><br>
+    <input name="Diameter" placeholder="Diameter" required><br>
+    <input name="Height" placeholder="Height" required><br>
+    <input name="Weight" placeholder="Weight" required><br>
+
+    <label>Sex:</label>
+    <select id="sex-select" required>
+      <option value="F">Female</option>
+      <option value="I">Indeterminant</option>
+      <option value="M">Male</option>
+    </select><br><br>
+
+    <button type="submit">Predict</button>
+  </form>
+
+  <h2>Prediction: <span id="result"></span></h2>
+
+  <script>
+    document.getElementById('predict-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(e.target);
+      const sex = document.getElementById('sex-select').value;
+
+      // Convert sex to one-hot
+      const sexInputs = { Sex_F: 0, Sex_I: 0, Sex_M: 0 };
+      sexInputs[`Sex_${sex}`] = 1;
+
+      const data = {
+        Length: formData.get('Length'),
+        Diameter: formData.get('Diameter'),
+        Height: formData.get('Height'),
+        Weight: formData.get('Weight'),
+        ...sexInputs
+      };
+
+      const res = await fetch('/predict', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const result = await res.json();
+      document.getElementById('result').textContent = result.prediction.toFixed(2);
+    });
+  </script>
+</body>
+</html>
