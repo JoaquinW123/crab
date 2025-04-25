@@ -7,7 +7,7 @@ import pandas as pd
 app = Flask(__name__)
 
 # Load the trained model and scaler
-model = keras.models.load_model('my_model.h5')
+model = keras.models.load_model('my_model.h5', compile = False) #compile = False so that it reduces overhead for render
 scaler = joblib.load('scaler.save')
 
 @app.route('/')
